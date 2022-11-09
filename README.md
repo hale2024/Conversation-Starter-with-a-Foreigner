@@ -23,3 +23,10 @@
 <img src='korea.png'><img>
 <img src='japan.png'><img>
 <h2>References:</h2>
+<p>Enhancing Social Interaction in Depression: https://bmjopen.bmj.com/content/8/9/e020448</p>	
+<p>Prevalence and correlates of mental health symptoms and disorders among international college students: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8677361/</p>	
+<p>The Dark Side of Living Abroad: https://www.dailysabah.com/life/health/the-hushed-up-dark-side-of-living-abroad-expat-depression</p>
+<p>The Expat life: https://www.apa.org/monitor/2019/2019-05-monitor.pdf</p>
+<p>Documentations for each API</p>
+<em>This assignment is done as part of KAIST Introduction to Services Computing course CS459.</em>
+

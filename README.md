@@ -21,7 +21,9 @@
 <h2>Sample Results:</h2>
 <p>Input Sample#1: <strong>Feven</strong>, a common Ethiopian female name. The result can be seen below:</p>
 <img src='ethio.png'><img>
+<p>Input Sample#2: <strong>Park</strong>, a common Korean name. The result can be seen below:</p>
 <img src='korea.png'><img>
+<p>Input Sample#3: <strong>Haruto</strong>, a common Japanese name. The result can be seen below:</p>
 <img src='japan.png'><img>
 <h2>References:</h2>
 <p>Enhancing Social Interaction in Depression: https://bmjopen.bmj.com/content/8/9/e020448</p>	

@@ -1,0 +1,927 @@
+[
+    {
+        "id": "566741d4b583a3b1",
+        "type": "tab",
+        "label": "Flow 3",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "04c3ea4156845010",
+        "type": "ui_text_input",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "label": "",
+        "tooltip": "",
+        "group": "76d079de17e84dd8",
+        "order": 1,
+        "width": 5,
+        "height": 2,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "name",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "msg",
+        "x": 100,
+        "y": 100,
+        "wires": [
+            [
+                "831a7d5aee5b65b2"
+            ]
+        ]
+    },
+    {
+        "id": "831a7d5aee5b65b2",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET Nationalize",
+        "func": "flow.set('name', msg.payload);\nvar name=flow.get('name');\nmsg.url = `https://api.nationalize.io?name=${name}`;\nmsg.method='GET';\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 100,
+        "wires": [
+            [
+                "27bbc1721d1e164b"
+            ]
+        ]
+    },
+    {
+        "id": "27bbc1721d1e164b",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 250,
+        "y": 180,
+        "wires": [
+            [
+                "203a3207b086cc70"
+            ]
+        ]
+    },
+    {
+        "id": "203a3207b086cc70",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "Parse Country",
+        "func": "var firstCountry = msg.payload.country[0];\nvar isoCode=firstCountry.country_id;\nflow.set('country_id', isoCode);\nvar fullCountryName= new Intl.DisplayNames(['en'], {type: 'region'});\nflow.set(\"country\", fullCountryName.of(isoCode));\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 160,
+        "y": 240,
+        "wires": [
+            [
+                "1ef1cbd085fb4b33",
+                "a6c63c6ca92fa0f7",
+                "dd2424219785d495",
+                "417a10c4284366bc"
+            ]
+        ]
+    },
+    {
+        "id": "4080f37ccf83addb",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "GET",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 810,
+        "y": 160,
+        "wires": [
+            [
+                "6400dad012c32323",
+                "d1cd37c00ace7f8f"
+            ]
+        ]
+    },
+    {
+        "id": "1ef1cbd085fb4b33",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET NewsData",
+        "func": "var country = flow.get('country');\nvar isoCountryCode = flow.get('country_id');\nmsg.x=isoCountryCode;\nmsg.method=`GET`;\nmsg.url = `https://newsdata.io/api/1/news?apikey=pub_12970d2a074a84bb226a42f21b03ddc9aea7a&country=${isoCountryCode}&language=en`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 160,
+        "wires": [
+            [
+                "4080f37ccf83addb"
+            ]
+        ]
+    },
+    {
+        "id": "6400dad012c32323",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "NewsText Formatter",
+        "func": "\nlet msg1 = msg.payload.results[0];\nlet title=msg1.title;\nlet description=msg1.description;\nlet link=msg1.link;\nlet country=flow.get('country');\n// flow.set(\"newsTitle\", title);\n// flow.set(\"newsDescription\", description);\nflow.set(\"newsLink\", link);\n// msg.payload = `Country: ${country}<br>\n//                 newsTitle: ${title}<br>\n//                 newsDescription: ${description}<br>\n//                 newsLink: ${link}<br>\n//    \nmsg.payload=`\n<html>\n<head>\n</head>\n<body>\n        <center><h1>Headline News from ${country} </h1></center>\n<h3> ${title} </h3>\n<p> ${description}</p>\n<br>\n<a href=\"${link}\">${link}</a>\n\n</body>\n                        \n</html>`;             \nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 140,
+        "wires": [
+            [
+                "5bf647ce1f26ea70"
+            ]
+        ]
+    },
+    {
+        "id": "5bf647ce1f26ea70",
+        "type": "ui_text",
+        "z": "566741d4b583a3b1",
+        "group": "76d079de17e84dd8",
+        "order": 5,
+        "width": 13,
+        "height": 6,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "className": "",
+        "x": 1230,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "d1cd37c00ace7f8f",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "NewsFrame Formatter",
+        "func": "var firstCountry = msg.payload.results[0];\nmsg.url = firstCountry.link;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 980,
+        "y": 60,
+        "wires": [
+            [
+                "98a2a5fab4a85052"
+            ]
+        ]
+    },
+    {
+        "id": "98a2a5fab4a85052",
+        "type": "ui_iframe",
+        "z": "566741d4b583a3b1",
+        "group": "76d079de17e84dd8",
+        "name": "",
+        "order": 6,
+        "width": 13,
+        "height": 13,
+        "url": "",
+        "origin": "*",
+        "scale": 100,
+        "x": 1150,
+        "y": 60,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e597c5dd5b96aaf5",
+        "type": "ui_text",
+        "z": "566741d4b583a3b1",
+        "group": "e4ea53b1ea797772",
+        "order": 1,
+        "width": 13,
+        "height": 3,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 1230,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "5dde8797ac2a6722",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GegraphicText_Formatter",
+        "func": "var country = flow.get('country');\n// msg.url =`https://countryflagsapi.com/png/${country}`\nvar lon=Math.round(flow.get('lon'));\nvar lat=Math.round(flow.get('lat'));\nmsg.payload = `\n<html>\n<head>\n</head>\n<body>\n<center><h1>Geography of ${country}</h1></center>\n<p> ${country}'s latitudinal location is approximately ${lat} degrees.</p>\n<p> While, it's longitudinal location is about ${lon} degrees.</p>\n\n\n\n</body>\n                        \n</html>`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1030,
+        "y": 420,
+        "wires": [
+            [
+                "e597c5dd5b96aaf5"
+            ]
+        ]
+    },
+    {
+        "id": "a6c63c6ca92fa0f7",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET Flagpedia",
+        "func": "var country = flow.get('country');\nvar isoId = flow.get('country_id').toLowerCase();\nmsg.url = `https://flagcdn.com/256x192/${isoId}.png`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 480,
+        "y": 260,
+        "wires": [
+            [
+                "7dfdcd55610b8463"
+            ]
+        ]
+    },
+    {
+        "id": "7dfdcd55610b8463",
+        "type": "ui_iframe",
+        "z": "566741d4b583a3b1",
+        "group": "76d079de17e84dd8",
+        "name": "",
+        "order": 2,
+        "width": 5,
+        "height": 2,
+        "url": "",
+        "origin": "*",
+        "scale": "50",
+        "x": 930,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "dd2424219785d495",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET Geoapify_Geocoding",
+        "func": "var country=flow.get('country');\nmsg.method=`GET`;\nmsg.url =`https://api.geoapify.com/v1/geocode/search?text=${country}&format=json&apiKey=00af9c92f8da44289320cf419beb3914`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 280,
+        "y": 440,
+        "wires": [
+            [
+                "cd7693a4373aaba2"
+            ]
+        ]
+    },
+    {
+        "id": "cd7693a4373aaba2",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 770,
+        "y": 380,
+        "wires": [
+            [
+                "d81bb3e2e3499933",
+                "5dde8797ac2a6722"
+            ]
+        ]
+    },
+    {
+        "id": "d81bb3e2e3499933",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET Geoapify_StaticMap",
+        "func": "let importantData=msg.payload.results[0];\nlet lon=importantData.lon;\nlet lat=importantData.lat;\nflow.set('lat', lat);\nflow.set('lon', lon);\nmsg.url = `https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=1600&height=800&center=lonlat:${lon},${lat}&zoom=6&apiKey=00af9c92f8da44289320cf419beb3914`;\nmsg.method=`GET`;\nmsg.lat=lat;\nmsg.long=lon;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 550,
+        "y": 500,
+        "wires": [
+            [
+                "8282aae3264ec1fb",
+                "852ec00256e5de05"
+            ]
+        ]
+    },
+    {
+        "id": "8282aae3264ec1fb",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 850,
+        "y": 500,
+        "wires": [
+            [
+                "ef586fa39d5dd7cc"
+            ]
+        ]
+    },
+    {
+        "id": "ef586fa39d5dd7cc",
+        "type": "ui_iframe",
+        "z": "566741d4b583a3b1",
+        "group": "e4ea53b1ea797772",
+        "name": "",
+        "order": 2,
+        "width": 13,
+        "height": 10,
+        "url": "",
+        "origin": "*",
+        "scale": 100,
+        "x": 1190,
+        "y": 500,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "a7eccf8743e1d98b",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "WeatherText Formatter",
+        "func": "var country = flow.get('country');\nvar temp = msg.payload.current.temperature;\nvar windSpeed = msg.payload.current.wind_speed;\nvar humidity = msg.payload.current.humidity;\nmsg.payload = `\n<html>\n<head>\n</head>\n<body>\n<br>\n<br>\n<center><h1>Weather News from ${country}</h1></center>\n<p>The current Temperature of ${country} is ${temp} degree Celcius.</p>\n<p>It's current Wind Speed is ${windSpeed} kilometeres per hour.</p>\n<br>\n\n\n\n</body>\n                        \n</html>`;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 920,
+        "y": 580,
+        "wires": [
+            [
+                "e4e69b304c403689"
+            ]
+        ]
+    },
+    {
+        "id": "e4e69b304c403689",
+        "type": "ui_text",
+        "z": "566741d4b583a3b1",
+        "group": "e4ea53b1ea797772",
+        "order": 3,
+        "width": 13,
+        "height": 3,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 1130,
+        "y": 580,
+        "wires": []
+    },
+    {
+        "id": "852ec00256e5de05",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET WeatherStack",
+        "func": "var lat1 = flow.get('lat');\nvar lon1 = flow.get('lon');\nmsg.url = `http://api.weatherstack.com/current?access_key=2327e6ec4cabd8d2f801281ec64f9eb5&query=${lat1},${lon1}`;\nmsg.method = `GET`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 470,
+        "y": 580,
+        "wires": [
+            [
+                "14476d7445372331",
+                "e424b45f74322d7c"
+            ]
+        ]
+    },
+    {
+        "id": "14476d7445372331",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 690,
+        "y": 580,
+        "wires": [
+            [
+                "db44aa0ef4f4816e",
+                "a7eccf8743e1d98b"
+            ]
+        ]
+    },
+    {
+        "id": "db44aa0ef4f4816e",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "WeatherImage Formatter",
+        "func": "msg.url=msg.payload.current.weather_icons;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 660,
+        "wires": [
+            [
+                "64e4705edb291f4f"
+            ]
+        ]
+    },
+    {
+        "id": "64e4705edb291f4f",
+        "type": "ui_iframe",
+        "z": "566741d4b583a3b1",
+        "group": "e4ea53b1ea797772",
+        "name": "",
+        "order": 5,
+        "width": 7,
+        "height": 6,
+        "url": "",
+        "origin": "*",
+        "scale": "200",
+        "x": 1130,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "417a10c4284366bc",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "GET Covid19",
+        "func": "var country=flow.get('country');\nmsg.method=`GET`;\nmsg.url =`https://covid19.mathdro.id/api/countries/${country}`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 340,
+        "wires": [
+            [
+                "43d0f8b1450f3de0"
+            ]
+        ]
+    },
+    {
+        "id": "43d0f8b1450f3de0",
+        "type": "http request",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "method": "use",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 690,
+        "y": 320,
+        "wires": [
+            [
+                "fa5711b3c117a88a",
+                "db1ff1d150394a35",
+                "e3cc737533a187a9",
+                "3fdbef2b640ec50f"
+            ]
+        ]
+    },
+    {
+        "id": "fa5711b3c117a88a",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "Confirmed",
+        "func": "let data=msg.payload;\nmsg.payload = data.confirmed.value;\nmsg.topic=\"confirmed\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 970,
+        "y": 280,
+        "wires": [
+            [
+                "e75375e625c9f491"
+            ]
+        ]
+    },
+    {
+        "id": "db1ff1d150394a35",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "Recovered",
+        "func": "let data = msg.payload;\nmsg.payload = data.confirmed.value;\nmsg.topic = \"recovered\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 320,
+        "wires": [
+            [
+                "e75375e625c9f491"
+            ]
+        ]
+    },
+    {
+        "id": "e3cc737533a187a9",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "Deaths",
+        "func": "let data = msg.payload;\nmsg.payload = data.deaths.value;\nmsg.topic = \"deaths\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1000,
+        "y": 360,
+        "wires": [
+            [
+                "e75375e625c9f491"
+            ]
+        ]
+    },
+    {
+        "id": "e75375e625c9f491",
+        "type": "ui_chart",
+        "z": "566741d4b583a3b1",
+        "name": "",
+        "group": "96d3e7d87bd88b59",
+        "order": 2,
+        "width": 13,
+        "height": 5,
+        "label": "",
+        "chartType": "bar",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": 1,
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 1170,
+        "y": 320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d5451fd2a5c1619c",
+        "type": "ui_text",
+        "z": "566741d4b583a3b1",
+        "group": "96d3e7d87bd88b59",
+        "order": 1,
+        "width": 13,
+        "height": 3,
+        "name": "",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "col-center",
+        "className": "",
+        "x": 1170,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "3fdbef2b640ec50f",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "COVID-19 Text",
+        "func": "var country = flow.get('country');\n\nmsg.payload = `\n<html>\n<head>\n</head>\n<body>\n\n<center><h1>Covid19 News from ${country}</h1></center>\n\n<br>\n\n\n\n</body>\n                        \n</html>`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 240,
+        "wires": [
+            [
+                "d5451fd2a5c1619c"
+            ]
+        ]
+    },
+    {
+        "id": "e424b45f74322d7c",
+        "type": "function",
+        "z": "566741d4b583a3b1",
+        "name": "Bilingua WebSite",
+        "func": "msg.url =`https://bilingua.io/100-simple-fun-conversation-exchange-topics`;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 720,
+        "wires": [
+            [
+                "3fecb87a20135859"
+            ]
+        ]
+    },
+    {
+        "id": "3fecb87a20135859",
+        "type": "ui_iframe",
+        "z": "566741d4b583a3b1",
+        "group": "96d3e7d87bd88b59",
+        "name": "",
+        "order": 4,
+        "width": 13,
+        "height": 12,
+        "url": "",
+        "origin": "*",
+        "scale": 100,
+        "x": 870,
+        "y": 720,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8912c6595877d8d8",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "76d079de17e84dd8",
+        "order": 3,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "185e4994208eafe2",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "76d079de17e84dd8",
+        "order": 4,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "32435bc02e2e714d",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 4,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "a9377334d9608b31",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 6,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "39ac859c18418bd5",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 7,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "d041bc03a257c59e",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 8,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "89230919dcfd4f55",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 9,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "17c3879e6e4732e2",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 10,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "916de034ce5955e6",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 11,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "9363d0b4aec41362",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 12,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "70f12f1d7ad86172",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 13,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "fc76894b161f04e8",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 14,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "c0a7de5fadd87138",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 15,
+        "width": 5,
+        "height": 1
+    },
+    {
+        "id": "e4bffacba134c5ab",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "e4ea53b1ea797772",
+        "order": 16,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "c89778beb1af6f85",
+        "type": "ui_spacer",
+        "z": "566741d4b583a3b1",
+        "name": "spacer",
+        "group": "96d3e7d87bd88b59",
+        "order": 3,
+        "width": 13,
+        "height": 1
+    },
+    {
+        "id": "76d079de17e84dd8",
+        "type": "ui_group",
+        "name": "Input Name",
+        "tab": "f452ccdf2e826b27",
+        "order": 1,
+        "disp": true,
+        "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "e4ea53b1ea797772",
+        "type": "ui_group",
+        "name": "",
+        "tab": "f452ccdf2e826b27",
+        "order": 2,
+        "disp": true,
+        "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "96d3e7d87bd88b59",
+        "type": "ui_group",
+        "name": "",
+        "tab": "f452ccdf2e826b27",
+        "order": 3,
+        "disp": true,
+        "width": "13",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "f452ccdf2e826b27",
+        "type": "ui_tab",
+        "name": "Conversation Starter with a Foreigner",
+        "icon": "dashboard",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

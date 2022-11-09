@@ -20,4 +20,6 @@
 <p>The main aim of this mashup is to facilitate a smooth conversation with a foreigner you just met and only know his/her name and help fight depression, one of the main problems experienced in KAIST.</p>
 <h2>Sample Results:</h2>
 <img src='ethio.png'><img>
+<img src='korea.png'><img>
+<img src='japan.png'><img>
 <h2>References:</h2>
